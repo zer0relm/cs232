@@ -1,0 +1,26 @@
+AJ Vrieland
+
+1. How many bytes of RAM does the virtual machine have by default?
+    There are 1024 words of memory, however the number of bytes per word is not defined
+
+2. What are the registers that the virtual machine has?
+    Three usable registers reg0, reg1, and reg2, as well as a program counter
+
+3. What arguments does the instruction JLZ take and what does the instruction do?
+    JLZ only takes one argument and checks if a value in a register is less than 0
+
+4. When does the CPU check if an interrupt has occurred?
+
+5. What does the Monitor instruction S do?
+    Displays the contents of RAM from location <start> to <end>
+
+6. What does the Monitor instruction ! do?
+    Displays the debugging information which is what instructions, and the registers after the instruction is executed
+
+7. Can assembly language files contain comments? How about blank lines?
+    The file can have comments but cannot have blank lines
+
+8. What function is called to write bytes into memory?
+
+9. Do assembly language programs assume they are loaded into memory at certain locations?
+    Yes
