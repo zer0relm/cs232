@@ -1,3 +1,9 @@
+/* Author: AJ Vrieland (ajv234)
+ * Date: 2/22/2021
+ * 
+ * 
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -21,7 +27,7 @@ int main (int argc, char *argv[]){
             fputc(tempChar, oFile);
             }
         } else {
-            printf("Error: File already exists");
+            printf("Error: File already exists \n");
             exit(-1);
         }
 
@@ -29,10 +35,10 @@ int main (int argc, char *argv[]){
         fclose(oFile);
 
     } else if ( argc >= 3 ) {
-        printf("Error: To many arguments ");
+        printf("Error: To many arguments\n");
         exit(-1);
     } else if (argc <= 3 ){
-        printf("Error: To few arguments");
+        printf("Error: To few arguments\n");
         exit(-1);
     }
 
