@@ -5,13 +5,18 @@
 #include <unistd.h>
 
 
-Shell::Shell(){
+
+Shell::Shell()
+{
 
     myVar = 1;
+    userInput = "";
 }
 
 void Shell::run(){
     while(true){
-        printf("hello world");
+        cout << "-> " << flush;
+        CommandLine myCommandLine(cin);
+        cout << userInput << flush;
     }
 }
