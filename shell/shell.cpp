@@ -4,6 +4,8 @@
 #include <string>
 #include <unistd.h>
 
+//#define DEBUGME 1
+
 
 
 Shell::Shell()
@@ -15,8 +17,18 @@ Shell::Shell()
 
 void Shell::run(){
     while(true){
-        cout << "-> " << flush;
+        Prompt myPrompt;
+        cout << myPrompt.get() << flush;
         CommandLine myCommandLine(cin);
-        cout << userInput << flush;
+        string myCommand = myCommandLine.getCommand();
+
+#if DEBUGME
+        cout << myCommand << flush;
+#endif
+        if (myCommand == "exit"){
+            break;
+        } else if( myCommand == "cd" ){
+        cout << "TODO: cd <FileName>" << endl;
+        }
     }
 }

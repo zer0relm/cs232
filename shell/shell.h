@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 #include "commandline.h"
+#include "prompt.h"
+#include "path.h"
 using namespace std;
 
 class Shell

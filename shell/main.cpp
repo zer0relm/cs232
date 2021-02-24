@@ -8,7 +8,8 @@
 
 #include <iostream>
 #include "shell.h"
-#include "commandline.h"
+#include "commandline.h" //CLEANUP
+#include "path.h" //ClEANUP
 
 //int main(int argc, const char *argv[])
 int main()

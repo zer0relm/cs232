@@ -14,7 +14,7 @@
 #include "commandline.h"
 using namespace std;
 
- #define DEBUGME 1
+//#define DEBUGME 1
 
 /**
  * Read in the command line from the user and parse it into argc and argv.
@@ -40,6 +40,9 @@ CommandLine::CommandLine(istream &in)
 
         // TODO: code here to process/check word. If it is a good word, then:
         // tempArgv.push_back(word);
+        if(word.length() >= 1){
+            tempArgv.push_back(word);
+        }
     }
 
 #if DEBUGME
