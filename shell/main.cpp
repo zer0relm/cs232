@@ -8,8 +8,10 @@
 
 #include <iostream>
 #include "shell.h"
+#include "commandline.h"
 
-int main(int argc, const char *argv[])
+//int main(int argc, const char *argv[])
+int main()
 {
     Shell myShell;
     myShell.run();

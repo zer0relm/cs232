@@ -1,0 +1,23 @@
+item next_produced; 
+    while (true) { 
+    / * produce an item into next_produced */ 
+    next_produced = code_that_produces_data(); 
+    while (((in + 1) % BUFFER_SIZE) == out); 
+         /* do nothing */
+    buffer[in] = next_produced; 
+    in = (in + 1) % BUFFER_SIZE; 
+} 
+
+int BUFFER_SIZE = 11;
+int in = 0;
+int out = 0;
+
+While(true){
+    if(((in + 1) % BUFFER_SIZE) == out){
+        break;
+    } else {
+        send(message)
+        in = (in + 1) % BUFFER_SIZE;
+    }
+}
+
