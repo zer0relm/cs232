@@ -10,6 +10,7 @@ using namespace std;
 class Path {
 public:
     Path();
+    string getPath();
 private:
     vector<string> pathVariable;
 };
