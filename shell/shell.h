@@ -15,9 +15,7 @@ public:
     Shell();
     void run();
 private:
-    string userInput;
     vector<string> userCommand;
-    int myVar;
 };
 
 #endif

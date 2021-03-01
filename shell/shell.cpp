@@ -13,8 +13,7 @@
 
 Shell::Shell()
 {
-    myVar = 1;
-    userInput = "";
+
 }
 
 void Shell::run(){
