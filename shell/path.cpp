@@ -3,19 +3,30 @@
 #include <stdlib.h>
 #include <sstream>
 #include <string.h>
+#include <iostream>
 
 
 
 Path::Path(){
     string tempVar = string(getenv("PATH"));
-    for(int i = 0; i <= tempVar.length(); i++ ){
-        if(tempVar[i] == '.'){
+    string tempWord = "";
+    // for(int i = 0; i <= tempVar.length(); i++ ){
+    //     if(tempVar[i] == '.'){
             
+    //     }
+    // }
+    istringstream ss(tempVar);
+    while(getline(ss, tempWord, '.')){
+        pathVariable.push_back(tempWord);
+        while (getline(ss, tempWord, ':')){
+            pathVariable.push_back(tempWord);
         }
+        
     }
-    pathVariable.push_back("");
+
+
 }
 
-string Path::getPath(){
-    return pathVariable[0];
+string Path::getPath(int index){
+    return pathVariable[index];
 }

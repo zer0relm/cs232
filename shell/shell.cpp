@@ -1,8 +1,10 @@
 #include "shell.h"
 #include <stdio.h>
+#include <string.h>
 #include <iostream>
 #include <string>
 #include <unistd.h>
+#include <dirent.h>
 
 //#define DEBUGME 1
 
@@ -28,7 +30,19 @@ void Shell::run(){
         if (myCommand == "exit"){
             break;
         } else if( myCommand == "cd" ){
-        cout << "TODO: cd <FileName>" << endl;
+            if (myCommandLine.getArgCount() == 2){
+                string pathAppend = myCommandLine.getArgVector(1);
+                const char *nP = "           ";
+                nP = pathAppend.c_str();
+                char *newPath = getcwd(NULL, 0);
+                strcat(newPath, "/");
+                strcat(newPath, nP);
+                cout << newPath << endl;
+                chdir(newPath);
+                myPrompt.set();
+            }
+        } else if( myCommand == "pwd"){
+            cout << string(getcwd(NULL, 0)) << endl;
         }
     }
 }

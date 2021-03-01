@@ -15,7 +15,7 @@
 int main()
 {
     Shell myShell;
-    //myShell.run();
+    myShell.run();
     Path myPath;
-    cout << myPath.getPath() << flush;
+    //cout << myPath.getPath() << flush;
 }
