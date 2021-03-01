@@ -41,7 +41,6 @@ void Shell::run(){
                 char *newPath = getcwd(NULL, 0);
                 strcat(newPath, "/");
                 strcat(newPath, nP);
-                cout << newPath << endl;
                 chdir(newPath);
                 myPrompt.set();
             }
