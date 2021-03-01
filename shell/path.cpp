@@ -4,21 +4,19 @@
 #include <sstream>
 #include <string.h>
 #include <iostream>
+#include <dirent.h>
 
+//#define DEBUGME 1
 
 
 Path::Path(){
     string tempVar = string(getenv("PATH"));
     string tempWord = "";
-    // for(int i = 0; i <= tempVar.length(); i++ ){
-    //     if(tempVar[i] == '.'){
-            
-    //     }
-    // }
     istringstream ss(tempVar);
     while(getline(ss, tempWord, '.')){
         pathVariable.push_back(tempWord);
         while (getline(ss, tempWord, ':')){
+            if (tempWord == "local/bin"){continue;}
             pathVariable.push_back(tempWord);
         }
         
@@ -27,6 +25,34 @@ Path::Path(){
 
 }
 
-string Path::getPath(int index){
+string Path::getDirectory(int index){
     return pathVariable[index];
+}
+
+int Path::find(const string program){
+    
+    for (int i = pathVariable.size(); i > 0; i--){
+#if DEBUGME
+        cout << program << endl;
+        //printPath();
+#endif
+        struct dirent *de;
+        const char *pV =  " ";
+        pV = pathVariable[i].c_str();
+        DIR *dir = opendir(pV);
+        cout << pV << endl;
+        while ((de = readdir(dir)) != NULL){
+            //cout << de->d_name << " == " << program << endl;
+            if (de->d_name == program){
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
+void Path::printPath(){
+    for (int i = 0; i < pathVariable.size(); i++){
+        cout << pathVariable[i] << endl;
+    }
 }

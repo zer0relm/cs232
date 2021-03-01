@@ -16,6 +16,4 @@ int main()
 {
     Shell myShell;
     myShell.run();
-    Path myPath;
-    //cout << myPath.getPath() << flush;
 }

@@ -10,8 +10,10 @@ using namespace std;
 class Path {
 public:
     Path();
-    string getPath(int index);
+    string getDirectory(int index);
+    int find(const string program);
 private:
+    void printPath();
     vector<string> pathVariable;
 };
 
