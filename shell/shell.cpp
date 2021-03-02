@@ -8,9 +8,6 @@
 #include "path.h"
 
 //#define DEBUGME 1
-
-
-
 Shell::Shell()
 {
 
@@ -56,8 +53,10 @@ void Shell::run(){
         } else if(myCommand == "find"){
             // I created this to test the path.find() function
             // Prints the dirctory where a program is found
+            // There are errors that I do not understand
             Path myPath; 
-            if (myCommandLine.getArgCount() >= 2){
+            if (myCommandLine.getArgCount() == 2){
+                cout << myPath.getDirectory(0);
                 string program = myCommandLine.getArgVector(1);
                 int directoryIndex = myPath.find(program);
                 //printf("%f", directoryIndex);
