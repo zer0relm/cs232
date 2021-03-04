@@ -1,3 +1,10 @@
+/*
+ * AJ Vrieland (ajv234)
+ * Date: 3-3-21
+ * CS232 Operating Systems
+ * 
+ */
+
 #include "shell.h"
 #include <stdio.h>
 #include <string.h>
