@@ -47,6 +47,11 @@ class CalOS:
         '''Called when the timer expires. If there is no process in the
         ready queue, reset the timer and continue.  Else, context_switch.
         '''
+        if self._ready_q == []:
+            self.reset_timer()
+        else:
+            self.context_switch()
+
         pass
 
     def context_switch(self):
@@ -59,6 +64,12 @@ class CalOS:
         '''Startup the timer controller and execute processes in the ready
         queue on the given cpu -- i.e., run the operating system!
         '''
+        self.current_proc = self._ready_q.pop(0)
+        if self._debug:
+            print(self.current_proc)
+        self.reset_timer()
+        self._cpu.set_registers(self.current_proc._registers)
+        self._cpu.run()
         pass
 
     def reset_timer(self):
