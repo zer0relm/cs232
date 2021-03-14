@@ -59,7 +59,7 @@ class CalOS:
         on the front of the ready_q.
         '''
         if self._debug:
-            print("I am inside context_switch() with current proc {}".format(self.current_proc))
+            print("I am inside context_switch() with current proc {}\nAnd registers: {}".format(self.current_proc, self.current_proc._registers))
         #tempArray = self.current_proc.get_registers()
         #self.current_proc.set_entry_point(tempArray[3])
         self.current_proc.set_state("READY")
@@ -69,8 +69,10 @@ class CalOS:
         self.current_proc = self._ready_q.pop(0)
         self.reset_timer()   
         self.current_proc.set_state("RUNNING")
-        self._cpu.set_registers(self.current_proc._registers)
-        self._cpu.run()
+        self._cpu.clear_registers()
+        self.temp_dictionary = self.current_proc.get_registers()
+        if self._debug: print(self.temp_dictionary)
+        self._cpu.set_registers(self.temp_dictionary)
         #pass
 
     def run(self):
