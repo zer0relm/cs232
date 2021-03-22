@@ -1,0 +1,22 @@
+Answers:
+1.	Where is the PCB class defined?
+a.	Calos.py
+2.	What information does a PCB object contain?
+a.	Name
+b.	pid
+c.	entry_point
+d.	the range of memory
+e.	the state of the process
+f.	the three registers and the pc
+g.	and the quantum
+3.	When is a PCB created? Which line in which file creates a PCB?
+a.	In main.py line 180. It is the _load_program() function
+4.	What process states have been defined?
+a.	NEW, READY, RUNNING, WAITING, DONE
+5.	Regarding the variable current_proc: Where has it been defined and what is its significance?
+a.	It is the name of the current running process and it is defined inside of the CalOS class
+6.	In the TimerController class, what does code that reads (with self.mutex:) do?
+a.	It locks the thread before a critical section
+7.	In the TimerController class, explain what the code does when the countdown goes to 0?
+a.	It locks the current thread with take_interrupt_mutex(), then adds and interrupt at with a certain ID, and then releases the mutex()
+
