@@ -1,5 +1,6 @@
 /*
- * Your info here.
+ * Name: AJ Vrieland (ajv234)
+ * Date: 3-22-21
  */
 
 #include <pthread.h>
@@ -37,6 +38,8 @@ char *curr_time_s() {
 void walk(int lower, int upper) {
     // TODO: fill in code here.  Use usleep() and get_rand_in_range() from
     // above.
+    sleep(get_rand_in_range(lower, upper));
+
 }
 
 // arg is the nurses station number.
@@ -63,6 +66,14 @@ void *client(void *arg) {
 
 int main() {
     srand(time(0));
+    pthread_t nurse_threads[NUM_NURSES];
+    pthread_t client_threads[NUM_CLIENTS];
+    for(int i = 0; i < NUM_NURSES; i++){
+        pthread_create(&nurse_threads[i], NULL, nurse, NULL);
+    }
+    for(int i = 0; i < NUM_CLIENTS; i++){
+        pthread_create(&client_threads[i], NULL, client, NULL);
+    }
 
     pthread_exit(0);
 }
