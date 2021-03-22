@@ -47,24 +47,55 @@ class CalOS:
         '''Called when the timer expires. If there is no process in the
         ready queue, reset the timer and continue.  Else, context_switch.
         '''
+        if self._ready_q == []:
+            self.reset_timer()
+        else:
+            self.context_switch()
+
         pass
 
     def context_switch(self):
         '''Do a context switch between the current_proc and the process
         on the front of the ready_q.
         '''
-        pass
+        if self._debug:
+            print("I am inside context_switch() with current proc {}\nAnd registers: {}".format(self.current_proc, self.current_proc._registers))
+        #tempArray = self.current_proc.get_registers()
+        #self.current_proc.set_entry_point(tempArray[3])
+        self.current_proc.set_state("READY")
+        self.current_proc.set_registers(self._cpu.get_registers)
+        self.add_to_ready_q(self.current_proc)
+
+        self.current_proc = self._ready_q.pop(0)
+        self.reset_timer()   
+        self.current_proc.set_state("RUNNING")
+        self._cpu.clear_registers()
+        self.temp_dictionary = self.current_proc.get_registers()
+        if self._debug: print(self.temp_dictionary)
+        self._cpu.set_registers(self.temp_dictionary)
+        #pass
 
     def run(self):
         '''Startup the timer controller and execute processes in the ready
         queue on the given cpu -- i.e., run the operating system!
         '''
-        pass
+        self.current_proc = self._ready_q.pop(0)
+        if self._debug:
+            print(self.current_proc)
+        self.reset_timer()   
+        self.current_proc.set_state("RUNNING")
+        self._cpu.set_registers(self.current_proc._registers)
+        self._cpu.run()
+        self.current_proc.set_state("DONE")
+
+        #pass
 
     def reset_timer(self):
         '''Reset the timer's countdown to the value in the current_proc's
         PCB.'''
-        self._timer_controller.set_countdown(CalOS.current_proc.get_quantum())
+        '''This piece of code was given but broken, so I changed CalOS.current_proc.get_quantum() to self.current_proc.get_quantum()
+                this fixed the issue'''
+        self._timer_controller.set_countdown(self.current_proc.get_quantum())
         
 
 
