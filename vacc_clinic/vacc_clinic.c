@@ -16,17 +16,23 @@
 // #define NUM_VIALS 30 // Given number
 #define NUM_VIALS 10 //so it doesn't run forever when writing code
 #define SHOTS_PER_VIAL 6
-#define NUM_CLIENTS (NUM_VIALS * SHOTS_PER_VIAL)
+// #define NUM_CLIENTS (NUM_VIALS * SHOTS_PER_VIAL) 
+#define NUM_CLIENTS 10 //so it doesn't run forever when writing code
 #define NUM_NURSES 10
 #define NUM_STATIONS NUM_NURSES
 #define NUM_REGISTRATIONS_SIMULTANEOUSLY 4
 
 
 /* global variables */
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t client_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
 sem_t nurse_reg;
 sem_t client_reg;
 int status;
+pthread_t client_array[5];
+int count = 0; 
+int in = 0;
+int out = 0;
 
 int get_rand_in_range(int lower, int upper) {
     return (rand() % (upper - lower + 1)) + lower;
@@ -63,6 +69,7 @@ void *nurse(void *arg) {
 
     fprintf(stderr, "%s: nurse %ld started\n", curr_time_s(), id);
     walk(1, 3);
+
     fprintf(stderr, "%s: nurse %ld is done\n", curr_time_s(), id);
     pthread_exit(NULL);
 }
@@ -74,6 +81,24 @@ void *client(void *arg) {
             curr_time_s(), id);
     walk(3, 10);
     
+    
+    if (out != ((in + 1) % 5) || out == in){
+        pthread_mutex_lock(&client_buffer_mutex);
+#if DEBUG
+    fprintf(stderr, "in is: %i\ncount is: %i\n", in, count);
+#endif
+        client_array[in] = pthread_self();
+        in++;
+        count++;
+        pthread_mutex_unlock(&client_buffer_mutex);
+    }else{
+        pthread_mutex_lock(&client_mutex);
+#if DEBUG
+    fprintf(stderr, "BUFFER is full\nin is: %i\ncount should equal 4 = %i\n", in, count);
+#endif
+    }
+     
+    
 
     fprintf(stderr, "%s: client %ld leaves the clinic!\n", curr_time_s(), id);
     sem_post(&client_reg);
@@ -82,6 +107,7 @@ void *client(void *arg) {
 }
 
 int main() {
+    int usable_vials = NUM_VIALS;
     status = sem_init(&nurse_reg, 0, 4);
     status = sem_init(&client_reg, 0, 4);
     srand(time(0));
@@ -92,6 +118,7 @@ int main() {
         pthread_create(&nurse_threads[i], NULL, nurse, number);
     }
     for(int i = 0; i < NUM_CLIENTS; i++){
+        walk(0, 1);
         void *number = (void *)(intptr_t)i;
         pthread_create(&client_threads[i], NULL, client, number);
     }
