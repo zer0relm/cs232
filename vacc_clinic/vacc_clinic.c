@@ -29,10 +29,11 @@ pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
 sem_t nurse_reg;
 sem_t client_reg;
 int status;
-pthread_t client_array[5];
+long int client_array[5];
 int count = 0; 
 int in = 0;
 int out = 0;
+int usable_vials = NUM_VIALS;
 
 int get_rand_in_range(int lower, int upper) {
     return (rand() % (upper - lower + 1)) + lower;
@@ -69,6 +70,19 @@ void *nurse(void *arg) {
 
     fprintf(stderr, "%s: nurse %ld started\n", curr_time_s(), id);
     walk(1, 3);
+    if (usable_vials < 0 ){
+        usable_vials--;
+    }
+    if (out != in){
+        pthread_mutex_lock(&client_buffer_mutex);
+            int working_client = client_array[out];
+            fprintf(stderr, "%s: nurse %ld, is vaccinating client %i\n", curr_time_s(), id, working_client);
+            out++;
+            count--;
+        pthread_mutex_unlock(&client_buffer_mutex);
+
+    }
+    
 
     fprintf(stderr, "%s: nurse %ld is done\n", curr_time_s(), id);
     pthread_exit(NULL);
@@ -87,9 +101,10 @@ void *client(void *arg) {
 #if DEBUG
     fprintf(stderr, "in is: %i\ncount is: %i\n", in, count);
 #endif
-        client_array[in] = pthread_self();
+        client_array[in] = id;
         in++;
         count++;
+        fprintf(stderr, "%s: client %ld has registered, and is waiting to get a vaccine\n", curr_time_s(), id);
         pthread_mutex_unlock(&client_buffer_mutex);
     }else{
         pthread_mutex_lock(&client_mutex);
@@ -107,21 +122,22 @@ void *client(void *arg) {
 }
 
 int main() {
-    int usable_vials = NUM_VIALS;
+    
     status = sem_init(&nurse_reg, 0, 4);
     status = sem_init(&client_reg, 0, 4);
     srand(time(0));
     pthread_t nurse_threads[NUM_NURSES];
     pthread_t client_threads[NUM_CLIENTS];
-    for(int i = 0; i < NUM_NURSES; i++){
-        void *number = (void *)(intptr_t)i;
-        pthread_create(&nurse_threads[i], NULL, nurse, number);
-    }
     for(int i = 0; i < NUM_CLIENTS; i++){
         walk(0, 1);
         void *number = (void *)(intptr_t)i;
         pthread_create(&client_threads[i], NULL, client, number);
     }
+    for(int i = 0; i < NUM_NURSES; i++){
+        void *number = (void *)(intptr_t)i;
+        pthread_create(&nurse_threads[i], NULL, nurse, number);
+    }
+    
 
     pthread_exit(0);
 }
