@@ -25,7 +25,7 @@
 
 /* global variables */
 pthread_mutex_t client_buffer_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t nurse_mutex = PTHREAD_MUTEX_INITIALIZER;
 sem_t nurse_reg;
 sem_t client_reg;
 int status;
@@ -59,30 +59,29 @@ void walk(int lower, int upper) {
 
 // arg is the nurses station number.
 void *nurse(void *arg) {
-
     long int id = (long int)arg;
-    //int id = pthread_self();
-
-
-#if DEBUG
-    fprintf(stderr, "\nnurse id: %i\n", id);
-#endif
 
     fprintf(stderr, "%s: nurse %ld started\n", curr_time_s(), id);
-    walk(1, 3);
-    if (usable_vials < 0 ){
+    while(usable_vials != 0){
+        walk(1, 3);
+        pthread_mutex_lock(&nurse_mutex);
         usable_vials--;
-    }
-    if (out != in){
-        pthread_mutex_lock(&client_buffer_mutex);
-            int working_client = client_array[out];
-            fprintf(stderr, "%s: nurse %ld, is vaccinating client %i\n", curr_time_s(), id, working_client);
-            out++;
-            count--;
-        pthread_mutex_unlock(&client_buffer_mutex);
+        pthread_mutex_unlock(&nurse_mutex);
+        //for(int i = 0; i < 6; i++){
+            while( 0 != pthread_mutex_lock(&client_buffer_mutex)){
 
+            }
+            if (out != in){
+                
+                    int working_client = client_array[out];
+                    fprintf(stderr, "%s: nurse %ld, is vaccinating client %i\n", curr_time_s(), id, working_client);
+                    out = (out + 1) % 5;
+                    count--;
+                pthread_mutex_unlock(&client_buffer_mutex);
+
+            }
+        //}
     }
-    
 
     fprintf(stderr, "%s: nurse %ld is done\n", curr_time_s(), id);
     pthread_exit(NULL);
@@ -94,24 +93,28 @@ void *client(void *arg) {
     fprintf(stderr, "%s: client %ld has arrived and is walking to register\n",
             curr_time_s(), id);
     walk(3, 10);
+    fprintf(stderr, "%s: client %ld is regestering\n", curr_time_s(), id);
+    walk(3, 10);
     
-    
+    while(0 != pthread_mutex_lock(&client_buffer_mutex)){
+        
+    }
     if (out != ((in + 1) % 5) || out == in){
-        pthread_mutex_lock(&client_buffer_mutex);
 #if DEBUG
     fprintf(stderr, "in is: %i\ncount is: %i\n", in, count);
 #endif
         client_array[in] = id;
-        in++;
+        in = (in + 1) % 5;
         count++;
         fprintf(stderr, "%s: client %ld has registered, and is waiting to get a vaccine\n", curr_time_s(), id);
         pthread_mutex_unlock(&client_buffer_mutex);
     }else{
-        pthread_mutex_lock(&client_mutex);
+        
 #if DEBUG
     fprintf(stderr, "BUFFER is full\nin is: %i\ncount should equal 4 = %i\n", in, count);
 #endif
     }
+    
      
     
 
@@ -128,15 +131,18 @@ int main() {
     srand(time(0));
     pthread_t nurse_threads[NUM_NURSES];
     pthread_t client_threads[NUM_CLIENTS];
-    for(int i = 0; i < NUM_CLIENTS; i++){
-        walk(0, 1);
-        void *number = (void *)(intptr_t)i;
-        pthread_create(&client_threads[i], NULL, client, number);
-    }
-    for(int i = 0; i < NUM_NURSES; i++){
-        void *number = (void *)(intptr_t)i;
-        pthread_create(&nurse_threads[i], NULL, nurse, number);
-    }
+
+    pthread_create(&client_threads[0], NULL, client, NULL);
+    pthread_create(&nurse_threads[0], NULL, nurse, NULL);
+    // for(int i = 0; i < NUM_CLIENTS; i++){
+    //     walk(0, 1);
+    //     void *number = (void *)(intptr_t)i;
+    //     pthread_create(&client_threads[i], NULL, client, number);
+    // }
+    // for(int i = 0; i < NUM_NURSES; i++){
+    //     void *number = (void *)(intptr_t)i;
+    //     pthread_create(&nurse_threads[i], NULL, nurse, number);
+    // }
     
 
     pthread_exit(0);
