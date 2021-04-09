@@ -37,6 +37,7 @@ char *curr_time_s() {
 void walk(int lower, int upper) {
     // TODO: fill in code here.  Use usleep() and get_rand_in_range() from
     // above.
+    usleep(get_rand_in_range(lower, upper));
 }
 
 // arg is the nurses station number.

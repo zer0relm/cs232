@@ -37,6 +37,7 @@ char *curr_time_s() {
 void walk(int lower, int upper) {
     // TODO: fill in code here.  Use usleep() and get_rand_in_range() from
     // above.
+    usleep(get_rand_in_range(lower, upper));
 }
 
 // arg is the nurses station number.
@@ -63,6 +64,10 @@ void *client(void *arg) {
 
 int main() {
     srand(time(0));
+    pthread_t nurseThreads[NUM_NURSES]; 
+    for (unsigned i = 0; i < NUM_NURSES; i++){
+        pthread_create(nurseThreads[i], NULL, nurse, i);
+    }
 
     pthread_exit(0);
 }
