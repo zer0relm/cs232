@@ -1,5 +1,7 @@
 /*
- * Your info here.
+ * AJ Vrieland (ajv234)
+ * Date: 04/10/21
+ * Thank you again for letting me re-do this assignment
  */
 
 #include <pthread.h>
@@ -13,13 +15,13 @@
 #define DEBUG 0
 
 #define NUM_VIALS 30
-//#define NUM_VIALS 1
+//#define NUM_VIALS 1  //Used as a debug value
 #define SHOTS_PER_VIAL 6
-//#define SHOTS_PER_VIAL 6
+//#define SHOTS_PER_VIAL 6 //Used as a debug value
 #define NUM_CLIENTS (NUM_VIALS * SHOTS_PER_VIAL)
-//#define NUM_CLIENTS 6
+//#define NUM_CLIENTS 6  //Used as a debug value
 #define NUM_NURSES 10
-//#define NUM_NURSES 1
+//#define NUM_NURSES 1  //Used as a debug value
 #define NUM_STATIONS NUM_NURSES
 #define NUM_REGISTRATIONS_SIMULTANEOUSLY 4
 
@@ -27,13 +29,6 @@
 /* global variables */
 int number_vials = NUM_VIALS;
 pthread_mutex_t vial_mutex;
-
-int station_buffer[NUM_STATIONS];
-int sb_in = 0;
-int sb_out = 0;
-int sb_size = NUM_STATIONS;
-int sb_count = 0;
-pthread_mutex_t station_mutex;
 
 int registration_buffer[NUM_REGISTRATIONS_SIMULTANEOUSLY];
 int rb_in = 0;
@@ -64,6 +59,12 @@ char *curr_time_s() {
 
 // lower and upper are in seconds.
 void walk(int lower, int upper) {
+    /* So this says to use usleep() which is in mircoseconds, and the assignment on the google docs says
+     * for the deleay to be in seconds. I created both, since they are a single line a piece, but the 
+     * disconnect is a bit confusing
+     */
+
+
     // TODO: fill in code here.  Use usleep() and get_rand_in_range() from
     // above.
     //usleep(get_rand_in_range(lower, upper));
@@ -76,9 +77,10 @@ void *nurse(void *arg) {
     int shots = SHOTS_PER_VIAL;
     fprintf(stderr, "%s: nurse %ld started\n", curr_time_s(), id);
 
-
+    // While loop is for when a vial runs out of shots, and the nurse needs to check to see if ther are more vials available
     while(1){
         walk(1, 3);
+        //vial_mutex only allows a single nurse to access the vials at a time
         pthread_mutex_lock(&vial_mutex);
         if (number_vials != 0 ){
             fprintf(stderr, "%s: nurse %ld is getting vial %i\n", curr_time_s(), id, number_vials);
@@ -91,36 +93,21 @@ void *nurse(void *arg) {
         }
         
         for(unsigned i = 0; i < shots; i++){
+            //rvs1&2 are rendezvous semaphores in order to sync up nurse threads with 
             sem_wait(&rvs2);
-        
-    #if DEBUG
-        fprintf(stderr, "nurse %ld is at rendezvous\n", id);
-    #endif
-
-            
-            //move this
+           
+            //locks access to the Registration buffer
             pthread_mutex_lock(&registration_mutex);
-
-    #if DEBUG
-        fprintf(stderr, "nurse %ld entered the mutex\nrb_out = %i, rb_count = %i\n", id, rb_out, rb_count);
-    #endif
 
             long int current_client = registration_buffer[rb_out];
             rb_out = (rb_out + 1) %rb_size;
             rb_count--;
 
-    #if DEBUG
-        fprintf(stderr, "rb_out = %i, rb_count = %i\n", rb_out, rb_count);
-    #endif
-
             pthread_mutex_unlock(&registration_mutex);
             fprintf(stderr, "%s: nurse %ld is vaccinating client %ld\n", curr_time_s(), id, current_client);
 
             sem_post(&rvs1);
-        
-    #if DEBUG
-        fprintf(stderr, "nurse %ld left the rendezvous\n", id);
-    #endif
+
         } 
     }   
 }
@@ -132,22 +119,18 @@ void *client(void *arg) {
             curr_time_s(), id);
     walk(3, 10);
 
+    /* I was unsure of the exact details of this section so I only allowed four clients to be in this section at a time, and only
+     * released the counting semaphore after a client got a shot. This means that there will only be four clients at a time will be waiting in the
+     * rendezvous at a time. I think that the sem_post(&client_semaphore) should be above the rendezvous but I am unsure on how to emplement that
+    */
     sem_wait(&client_semaphore);
-#if DEBUG
-    fprintf(stderr, "%s: client %ld is in the semaphor\n", curr_time_s(), id);
-#endif
+
     while(rb_count == rb_size){
-        fprintf(stderr, "rb_count %i == rb_size %i", rb_count, rb_size);
-        
+        fprintf(stderr, "rb_count %i == rb_size %i", rb_count, rb_size);  
     }
-        
-        
+
         walk(3, 10);
-
-#if DEBUG
-    fprintf(stderr, "%s: before: client_id: %i.  rb_in: %i.  rb_count:  %i.\n", curr_time_s(), id, rb_in, rb_count);
-#endif
-
+        // adds the clients id to the registration buffer so that a nurse can 
         pthread_mutex_lock(&registration_mutex);
         fprintf(stderr, "%s: client %ld is registering at desk %i\n",
                 curr_time_s(), id, rb_in);
@@ -157,23 +140,11 @@ void *client(void *arg) {
         pthread_mutex_unlock(&registration_mutex);
         walk(3, 10);
 
-#if DEBUG
-    fprintf(stderr, "%s: after: client_id: %i rb_in: %i.  rb_count:  %i.\n", curr_time_s(), id, rb_in, rb_count);
-#endif
-    
+    //rendezvous
     sem_post(&rvs2);
-    
-#if DEBUG
-    fprintf(stderr, "%s: client %ld entered the rendezvous\n", curr_time_s(), id);
-#endif
 
     sem_wait(&rvs1);
-
-#if DEBUG
-    fprintf(stderr, "%s: client %ld left the rendezvous\n", curr_time_s(), id);
-#endif
-
-    
+   
     sem_post(&client_semaphore);
 
     fprintf(stderr, "%s: client %ld leaves the clinic!\n", curr_time_s(), id);
@@ -195,6 +166,7 @@ int main() {
         pthread_create(&nurse_threads[i], NULL, nurse, number);
     }
     for (unsigned i = 0; i < NUM_CLIENTS; i++){
+        walk(0, 1);
         void *number = (void *)(intptr_t)i;
         pthread_create(&client_threads[i], NULL, client, number);
     }
