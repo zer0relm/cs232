@@ -1,4 +1,0 @@
-#if DEBUG
-    fprintf(stderr, "%s: client %ld is in the semaphor\n", curr_time_s(), id);
-#endif
-
