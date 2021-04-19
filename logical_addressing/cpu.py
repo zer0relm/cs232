@@ -386,3 +386,9 @@ class CPU:
         """Call this to stop the CPU because there are no more processes
         to execute."""
         self._stop = val
+
+    #my code
+    def set_mmu_registers(self, init_high_mem, init_low_mem):
+        self._mmu.set_reloc_register(init_low_mem)
+        high_mem = init_high_mem - init_low_mem
+        self._mmu.set_limit_register(high_mem)

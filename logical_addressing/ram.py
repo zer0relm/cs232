@@ -28,16 +28,23 @@ class MMU:
         self._reloc_register = value
 
     def set_limit_register(self, value):
-        self._limit_register = value
+        
+        self._limit_register = value  
 
     def getvalue(self, addr):
-        return self._ram.__getitem__(addr)
+        if(self.check_logical_addr(addr) == True):
+            return self._ram.__getitem__(addr + self._reloc_register)
+        else:
+            exit
         
     def setvalue(self, addr, value):
-        self._ram.__setitem__(addr, value)
+        if(self.check_logical_addr(addr) == True):
+            self._ram.__setitem__(addr, value + self._reloc_register)
+        else:
+            exit
 
     def check_logical_addr(self, addr):
-        if (addr < (self._reloc_register + self._limit_register)):
+        if (addr < self._limit_register):
             return True
         else:
             print("Bad Address: %i: too high", format(addr))
