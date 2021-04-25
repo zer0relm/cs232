@@ -2,21 +2,30 @@ import socket
 
 class cypher_client:
     def __init__(self, serverName, port, rotation):
+        self._my_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self._server_name = serverName
-        self.ip = socket.gethostbyname(self._server_name)
         self._port = port
         self._rotation = rotation
         socket.setdefaulttimeout(30)
         self._timeout = socket.getdefaulttimeout()
-        try:
-           
-            self._server_connection = socket.create_connection((self._server_name, self._port))
-            #self._packet = socket.PF_PACKET(self._rotation)
+        try:  
+            #self._my_socket.connect((self._server_name, self._port))
+            self._my_socket.connect((socket.gethostname(), self._port))
+            #mssg = self._my_socket.recvmsg(16)
+            
         except:
-            print("server: {} and port: is not connecting", format(self._server_name))
+            print("server: {self._server_name} and port: {self._port} is not connecting")
 
     def run(self):
-        self._server_connection.send(self._packet)
+        try:
+            self._my_socket.send(bytes(self._rotation))
+            print("socket sent, now recieving")
+            message = self._my_socket.recv(1024)
+        except:
+            print(f"send did not work")
+        # self._mssg = self._my_socket.recv(2)
+        print(message.decode())
 
 
 # host = input("Hello, please input host: ")
