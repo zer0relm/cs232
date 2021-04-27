@@ -229,8 +229,8 @@ class Monitor:
         if len(line.split()) != 2:
             raise ValueError("Illegal format: __data: must be followed by byte size.")
         max_memory = int(line.split()[1])
-        max_memory = addr + max_memory #I am still a little confused about what this is actually suposed to calculate
-        pcb.set_high_mem(max_memory)
+        high_memory = addr + max_memory #I am still a little confused about what this is actually suposed to calculate
+        pcb.set_high_mem(high_memory)
         if self._debug:
             print("__data found at physical location", addr, "but logical addr", max_memory)
 
