@@ -11,11 +11,13 @@ class cypher_client:
         try: 
             if(self._server_name == "localhost" or self._server_name == ""):
                 self._my_socket.connect((socket.gethostname(), self._port))
+                welcome = self._my_socket.recv(1024)
+                print(welcome.decode())
             else:
                 self._my_socket.connect((self._server_name, self._port))
             
         except:
-            print("server: {self._server_name} and port: {self._port} is not connecting")
+            print(f"server: {self._server_name} and port: {self._port} is not connecting")
 
     '''
     Messages sent between Python and Java, the python string must include \r\n because Java is expecting it but python does not
@@ -45,9 +47,9 @@ class cypher_client:
             try:
                 unEncodedMessage = input("Input message to encode: ")
                 self._my_socket.send(bytes(rotation + "\r", "utf-8"))
-                
-                EncodedMessage = self._my_socket.recv(1024)
                 self._my_socket.send(bytes(unEncodedMessage + "\r", "utf-8"))
+                EncodedMessage = self._my_socket.recv(1024)
+                
                 EncodedMessage = self._my_socket.recv(1024)
                 print(EncodedMessage.decode())
                 choice = input("Type q to quit\nType c to continue: ")
@@ -65,7 +67,8 @@ class cypher_client:
 
 # host = input("Hello, please input host: ")
 # port = int(input("please input port: "))
-host = "brooks.cs.calvin.edu"
+#host = "brooks.cs.calvin.edu"
+host = "localhost"
 port = 9876
 rotation = 2
 cypher = cypher_client(host, port)
