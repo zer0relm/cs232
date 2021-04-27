@@ -132,17 +132,17 @@ int main() {
     pthread_t nurse_threads[NUM_NURSES];
     pthread_t client_threads[NUM_CLIENTS];
 
-    pthread_create(&client_threads[0], NULL, client, NULL);
-    pthread_create(&nurse_threads[0], NULL, nurse, NULL);
-    // for(int i = 0; i < NUM_CLIENTS; i++){
-    //     walk(0, 1);
-    //     void *number = (void *)(intptr_t)i;
-    //     pthread_create(&client_threads[i], NULL, client, number);
-    // }
-    // for(int i = 0; i < NUM_NURSES; i++){
-    //     void *number = (void *)(intptr_t)i;
-    //     pthread_create(&nurse_threads[i], NULL, nurse, number);
-    // }
+    // pthread_create(&client_threads[0], NULL, client, NULL);
+    // pthread_create(&nurse_threads[0], NULL, nurse, NULL);
+    for(int i = 0; i < NUM_CLIENTS; i++){
+        walk(0, 1);
+        void *number = (void *)(intptr_t)i;
+        pthread_create(&client_threads[i], NULL, client, number);
+    }
+    for(int i = 0; i < NUM_NURSES; i++){
+        void *number = (void *)(intptr_t)i;
+        pthread_create(&nurse_threads[i], NULL, nurse, number);
+    }
     
 
     pthread_exit(0);
