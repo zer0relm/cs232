@@ -65,12 +65,12 @@ class cypher_client:
         
 
 
-# host = input("Hello, please input host: ")
-# port = int(input("please input port: "))
+host = input("Hello, please input host: ")
+port = int(input("please input port: "))
 #host = "brooks.cs.calvin.edu"
-host = "localhost"
-port = 9876
-rotation = 2
+#host = "localhost"
+#port = 9876
+
 cypher = cypher_client(host, port)
 cypher.run()
     
