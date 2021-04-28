@@ -46,8 +46,8 @@ class cypher_client:
         while (choice != "q"):
             try:
                 unEncodedMessage = input("Input message to encode: ")
-                self._my_socket.send(bytes(rotation + "\r", "utf-8"))
-                self._my_socket.send(bytes(unEncodedMessage + "\r", "utf-8"))
+                self._my_socket.send(bytes(rotation + "\r\n", "utf-8"))
+                self._my_socket.send(bytes(unEncodedMessage + "\r\n", "utf-8"))
                 EncodedMessage = self._my_socket.recv(1024)
                 
                 EncodedMessage = self._my_socket.recv(1024)
