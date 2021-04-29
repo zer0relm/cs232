@@ -15,7 +15,8 @@ class cypher_client:
                 print(welcome.decode())
             else:
                 self._my_socket.connect((self._server_name, self._port))
-            
+                welcome = self._my_socket.recv(1024)
+                print(welcome.decode())
         except:
             print(f"server: {self._server_name} and port: {self._port} is not connecting")
 
@@ -41,14 +42,21 @@ class cypher_client:
 
     def run(self):
         choice = "c"
-        rotation = input("Input rotation amount: ")
+        
         
         while (choice != "q"):
             try:
-                unEncodedMessage = input("Input message to encode: ")
+                #Rotation Group
+                ######
+                rotation = input("Input rotation amount: ")
                 self._my_socket.send(bytes(rotation + "\r\n", "utf-8"))
-                self._my_socket.send(bytes(unEncodedMessage + "\r\n", "utf-8"))
                 EncodedMessage = self._my_socket.recv(1024)
+                #######
+
+                unEncodedMessage = input("Input message to encode: ")
+                
+                self._my_socket.send(bytes(unEncodedMessage + "\r\n", "utf-8"))
+                
                 
                 EncodedMessage = self._my_socket.recv(1024)
                 print(EncodedMessage.decode())
@@ -65,11 +73,11 @@ class cypher_client:
         
 
 
-host = input("Hello, please input host: ")
-port = int(input("please input port: "))
-#host = "brooks.cs.calvin.edu"
-#host = "localhost"
-#port = 9876
+# host = input("Hello, please input host: ")
+# port = int(input("please input port: "))
+host = "brooks.cs.calvin.edu"
+# host = "localhost"
+port = 9876
 
 cypher = cypher_client(host, port)
 cypher.run()
